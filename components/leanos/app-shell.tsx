@@ -289,7 +289,7 @@ function Metric({ label, value }: { label: string; value: number }) { return <di
 
 function TeamPage() {
   const people = ["Adryan", "Cleberson", "Eyshila", "Gustavo", "Nicollas Matheus", "Pedro Araujo", "Rayssa Couto", "Yuri"];
-  const roles = ["Product Owner", "UX/UI", "Analista de Requisitos", "Back-end", "QA / Testes", "DevOps", "Dados / DBA", "Documentação"];
+  const roles = ["Product Owner / Front-end", "UX/UI", "Analista de Requisitos", "Back-end", "QA / Testes", "DevOps", "Dados / DBA", "Documentação"];
   return <div><PageHeading eyebrow="Projeto Integrador" title="Equipe LeanOS" description="A equipe LeanOS é composta por oito colaboradores. A distribuição abaixo é visual e pode ser ajustada após a validação formal da equipe." /><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{people.map((person,index) => <div key={person} className="flex items-center gap-4 rounded-2xl border bg-white p-4"><Avatar><AvatarFallback className="bg-[#e5f1ee] font-semibold text-primary">{person.split(" ").map((n) => n[0]).slice(0,2).join("")}</AvatarFallback></Avatar><div><p className="font-semibold">{person}</p><p className="text-sm text-muted-foreground">{roles[index]}</p></div></div>)}</div></div>;
 }
 
