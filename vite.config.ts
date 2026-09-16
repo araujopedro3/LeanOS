@@ -1,6 +1,6 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
 
@@ -8,9 +8,17 @@ const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
 
 function readHostingConfig(command: "serve" | "build"): { d1?: string; r2?: string } | undefined {
+  const hostingPath = new URL("./.openai/hosting.json", import.meta.url);
+  if (!existsSync(hostingPath)) {
+    if (command === "serve") {
+      console.warn("Local development: .openai/hosting.json is absent; D1 and R2 bindings are disabled.");
+    }
+    return undefined;
+  }
+
   try {
     return JSON.parse(
-      readFileSync(new URL("./.openai/hosting.json", import.meta.url), "utf8"),
+      readFileSync(hostingPath, "utf8"),
     );
   } catch (error) {
     if (command === "serve" && (error as NodeJS.ErrnoException).code === "ENOENT") {
