@@ -361,6 +361,7 @@ function AuthScreen({
   ]);
   const [authError, setAuthError] = useState("");
   const [activeView, setActiveView] = useState<"menu" | "admin" | "company" | "register">("menu");
+  const [choicePressed, setChoicePressed] = useState(false);
 
   const updateEmployee = (index: number, field: keyof EmployeeDraft, value: string) => {
     setEmployeeDrafts((current) => current.map((employee, employeeIndex) => employeeIndex === index ? { ...employee, [field]: value } : employee));
@@ -422,11 +423,11 @@ function AuthScreen({
   const renderMenu = () => (
     <div className="flex min-h-[420px] items-center justify-center">
       <div className="grid w-full max-w-xl gap-4 md:grid-cols-2">
-        <button type="button" onClick={() => setActiveView("admin")} className="rounded-2xl border border-[#dfe8e5] bg-[#f7faf9] p-6 text-center text-xl font-semibold tracking-[-.03em] text-[#173b35] transition hover:border-[#b9d2cd] hover:bg-[#eef7f5]">
+        <button type="button" onPointerDown={() => setChoicePressed(true)} onPointerUp={() => setChoicePressed(false)} onPointerLeave={() => setChoicePressed(false)} onClick={() => setActiveView("admin")} className="login-choice rounded-2xl border border-[#dfe8e5] bg-[#f7faf9] p-6 text-center text-xl font-semibold tracking-[-.03em] text-[#173b35] transition hover:border-[#b9d2cd] hover:bg-[#eef7f5]">
           Login
         </button>
 
-        <button type="button" onClick={() => setActiveView("register")} className="rounded-2xl border border-[#dfe8e5] bg-[#dff66c] p-6 text-center text-xl font-semibold tracking-[-.03em] text-[#173b35] transition hover:bg-[#d4f15e]">
+        <button type="button" onPointerDown={() => setChoicePressed(true)} onPointerUp={() => setChoicePressed(false)} onPointerLeave={() => setChoicePressed(false)} onClick={() => setActiveView("register")} className="login-choice rounded-2xl border border-[#dfe8e5] bg-[#dff66c] p-6 text-center text-xl font-semibold tracking-[-.03em] text-[#173b35] transition hover:bg-[#d4f15e]">
           Cadastro
         </button>
       </div>
@@ -440,21 +441,21 @@ function AuthScreen({
   );
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_#dff66c_0%,_#eaf7f4_30%,_#f8faf9_100%)] p-6">
-      <div className="w-full max-w-6xl overflow-hidden rounded-[32px] border border-[#dfe8e5] bg-white/90 shadow-[0_30px_80px_rgba(23,59,53,0.12)] backdrop-blur-xl">
+    <div className="login-stage flex min-h-screen items-center justify-center p-6">
+      <div className="login-card w-full max-w-6xl overflow-hidden rounded-[32px] border border-[#dfe8e5] bg-white/90 shadow-[0_30px_80px_rgba(23,59,53,0.12)] backdrop-blur-xl">
         <div className="grid gap-0 md:grid-cols-[1.1fr_1.4fr]">
-          <div className="flex items-center justify-center bg-[#173b35] p-8 text-white md:p-10">
-            <div className="flex items-center gap-3">
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-[#dff66c] text-xl font-black text-[#173b35]">L</span>
+          <div className={`login-brand-panel flex items-center justify-center bg-[#173b35] p-8 text-white md:p-10 ${choicePressed ? "login-brand-panel-press" : ""}`}>
+            <div className="login-brand flex items-center gap-3">
+              <span className="login-logo flex size-11 items-center justify-center rounded-2xl bg-[#dff66c] text-xl font-black text-[#173b35]">L</span>
               <div>
                 <p className="text-xs uppercase tracking-[.2em] text-[#dff66c]">LeanOS</p>
-                <h1 className="text-3xl font-semibold tracking-[-.04em]">Gestão operacional</h1>
+                <h1 className="login-brand-title text-3xl font-semibold tracking-[-.04em]">Gestão operacional</h1>
               </div>
             </div>
           </div>
 
           <div className="flex items-center justify-center p-6 md:p-8">
-            <div className="w-full max-w-3xl">
+            <div className="login-form w-full max-w-3xl">
               {authError ? <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{authError}</div> : null}
 
               {activeView === "menu" && renderMenu()}
