@@ -33,3 +33,20 @@ pnpm build
 ## Persistência do MVP
 
 Os processos, tarefas, medições e planos criados são armazenados localmente no navegador. A documentação do projeto mantém backend, banco em nuvem e sincronização entre dispositivos como evolução posterior ao MVP.
+
+Cada empresa tem um registro separado. Trocar de conta ou acessar o ADM não apaga registros. O ADM mantém os dados demonstrativos originais. Dados de empresas do formato anterior são lidos e migrados ao entrar, sem exclusão dos registros antigos.
+
+Novas senhas são armazenadas como hashes com salt; contas antigas são convertidas no próximo login. A autenticação continua sendo local: o MVP não substitui autenticação e autorização em servidor. Limpar o armazenamento do navegador ainda remove os dados locais.
+
+Para começar em uma empresa: cadastre funcionários, crie um processo com etapas e depois adicione tarefas, medições e planos de melhoria. A tela de tarefas permite concluir ações; os planos permitem atualizar a situação e informar o resultado posterior.
+
+## Verificação
+
+```bash
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm build
+```
+
+Os testes de componentes usam DOM simulado, sem acessar contas ou dados reais. Com a versão instalada do JSDOM, use Node.js 22.22.2+, 24.15+ ou 26+ para executar os testes.

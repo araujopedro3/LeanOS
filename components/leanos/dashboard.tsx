@@ -1,8 +1,7 @@
 "use client";
 
-import { Activity, AlertTriangle, ArrowDown, ArrowRight, CheckCircle2, CircleGauge, Clock3, ListTodo, SearchX, Sparkles, TimerReset, TrendingDown } from "lucide-react";
+import { Activity, AlertTriangle, ArrowDown, ArrowRight, CheckCircle2, CircleGauge, Clock3, ListTodo, Sparkles, TimerReset, TrendingDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { avg, getBottleneck, processAverage, processById, trendByPeriod, type Improvement, type LeanProcess, type Period, type TaskItem } from "@/lib/leanos-data";
@@ -195,6 +194,3 @@ function DashboardSkeleton() {
   return <div className="space-y-5"><Skeleton className="h-56 rounded-2xl" /><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{[1,2,3,4].map((item) => <Skeleton key={item} className="h-32 rounded-2xl" />)}</div><div className="grid gap-4 lg:grid-cols-3"><Skeleton className="h-80 rounded-2xl lg:col-span-2" /><Skeleton className="h-80 rounded-2xl" /></div></div>;
 }
 
-export function EmptySearchState() {
-  return <div className="flex flex-col items-center px-6 py-12 text-center"><SearchX className="mb-3 size-7 text-muted-foreground" /><p className="font-medium">Nenhum resultado</p><p className="mt-1 text-sm text-muted-foreground">Tente buscar pelo nome, responsável ou identificador.</p></div>;
-}
