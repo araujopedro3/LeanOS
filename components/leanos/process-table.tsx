@@ -3,14 +3,17 @@
 import { useState } from "react";
 import { ArrowUpRight, Clock3, Gauge, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { displayDate } from "@/lib/leanos-storage";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getBottleneck, processAverage, type LeanProcess } from "@/lib/leanos-data";
 import { PriorityBadge, StatusBadge } from "./badges";
 
-export function ProcessTable({ processes, compact = false }: { processes: LeanProcess[]; compact?: boolean }) {
-  const [selected, setSelected] = useState<LeanProcess | null>(null);
+export function ProcessTable({ processes, compact = false, onUpdate, onOpenImprovements }: { processes: LeanProcess[]; compact?: boolean; onUpdate?: (process: LeanProcess) => boolean; onOpenImprovements?: () => void }) {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selected = processes.find((process) => process.id === selectedId);
 
   if (!processes.length) {
     return (
@@ -38,7 +41,7 @@ export function ProcessTable({ processes, compact = false }: { processes: LeanPr
         </TableHeader>
         <TableBody>
           {processes.map((process) => (
-            <TableRow key={process.id} className="cursor-pointer" onClick={() => setSelected(process)} tabIndex={0} onKeyDown={(event) => event.key === "Enter" && setSelected(process)}>
+            <TableRow key={process.id} className="cursor-pointer" onClick={() => setSelectedId(process.id)} tabIndex={0} onKeyDown={(event) => event.key === "Enter" && setSelectedId(process.id)}>
               <TableCell className="pl-5">
                 <div className="font-medium text-[#183f3a]">{process.name}</div>
                 <div className="mt-0.5 text-xs text-muted-foreground">{process.id} · {process.category}</div>
@@ -52,9 +55,9 @@ export function ProcessTable({ processes, compact = false }: { processes: LeanPr
                 </div>
               </TableCell>
               {!compact ? <TableCell><PriorityBadge priority={process.priority} /></TableCell> : null}
-              <TableCell className={process.status === "Atrasado" ? "font-medium text-[#a33731]" : "text-muted-foreground"}>{process.due}</TableCell>
+              <TableCell className={process.status === "Atrasado" ? "font-medium text-[#a33731]" : "text-muted-foreground"}>{displayDate(process.due)}</TableCell>
               <TableCell>
-                <Button variant="ghost" size="icon" aria-label={`Abrir ${process.name}`} onClick={(event) => { event.stopPropagation(); setSelected(process); }}>
+                <Button variant="ghost" size="icon" aria-label={`Abrir ${process.name}`} onClick={(event) => { event.stopPropagation(); setSelectedId(process.id); }}>
                   <MoreHorizontal className="size-4" />
                 </Button>
               </TableCell>
@@ -63,16 +66,16 @@ export function ProcessTable({ processes, compact = false }: { processes: LeanPr
         </TableBody>
       </Table>
 
-      <Sheet open={Boolean(selected)} onOpenChange={(open) => !open && setSelected(null)}>
+      <Sheet open={Boolean(selected)} onOpenChange={(open) => !open && setSelectedId(null)}>
         <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
-          {selected ? <ProcessDetails process={selected} /> : null}
+          {selected ? <ProcessDetails process={selected} onUpdate={onUpdate} onOpenImprovements={onOpenImprovements ? () => { setSelectedId(null); onOpenImprovements(); } : undefined} /> : null}
         </SheetContent>
       </Sheet>
     </>
   );
 }
 
-function ProcessDetails({ process }: { process: LeanProcess }) {
+function ProcessDetails({ process, onUpdate, onOpenImprovements }: { process: LeanProcess; onUpdate?: (process: LeanProcess) => boolean; onOpenImprovements?: () => void }) {
   const bottleneck = getBottleneck(process);
   return (
     <div>
@@ -82,6 +85,7 @@ function ProcessDetails({ process }: { process: LeanProcess }) {
         <SheetDescription>{process.id} · Responsável: {process.owner} · Atualizado {process.updated.toLowerCase()}</SheetDescription>
       </SheetHeader>
       <div className="space-y-6 p-6">
+        {onUpdate ? <div className="space-y-2"><p className="text-sm font-medium">Situação do processo</p><Select value={process.status} onValueChange={(value) => onUpdate({ ...process, status: value as LeanProcess["status"], progress: value === "Concluído" ? 100 : process.progress === 100 ? 0 : process.progress, updated: "Agora" })}><SelectTrigger aria-label="Situação do processo"><SelectValue /></SelectTrigger><SelectContent>{(["Planejado", "Em andamento", "Em análise", "Atrasado", "Concluído"] as const).map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent></Select></div> : null}
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-xl border bg-[#f7faf9] p-4">
             <Clock3 className="mb-3 size-5 text-primary" />
@@ -125,7 +129,7 @@ function ProcessDetails({ process }: { process: LeanProcess }) {
           </ol>
         </div>
 
-        <Button className="w-full" onClick={() => document.getElementById("improvements-section")?.scrollIntoView({ behavior: "smooth" })}>
+        <Button className="w-full" onClick={() => onOpenImprovements ? onOpenImprovements() : document.getElementById("improvements-section")?.scrollIntoView({ behavior: "smooth" })}>
           Ver plano de melhoria <ArrowUpRight className="size-4" />
         </Button>
       </div>

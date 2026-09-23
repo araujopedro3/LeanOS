@@ -7,6 +7,7 @@ export type Stage = {
   name: string;
   order: number;
   measurements: number[];
+  records?: { id: string; start: string; end: string; minutes: number; operator: string }[];
 };
 
 export type LeanProcess = {
@@ -39,6 +40,8 @@ export type Improvement = {
   title: string;
   processId: string;
   stage: string;
+  stageId?: string;
+  baselineSamples?: number;
   problem: string;
   action: string;
   owner: string;
